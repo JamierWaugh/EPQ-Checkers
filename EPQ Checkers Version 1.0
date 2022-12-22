@@ -1,0 +1,716 @@
+import numpy as np
+import random as r
+import time as t
+#boardlist
+global availableMovesList
+global priorityMove
+global score
+global playtype
+moves = 1
+inPlay = True
+#class containing all pieceinfo and to contain move programmes
+class pieceInfo():
+    def __init__ (self,x,y,colour,isKing,value):
+        self.x = x
+        self.y = y
+        self.colour = colour
+        self.isKing = isKing
+        self.value = value 
+
+    #moves and more for black piece
+    def diagonalForwardB(self):
+        global availableMovesList
+        global priorityList
+        priorityMove = False
+        if self.x != 0 and self.y != 7:
+            move1 = True
+            movex = self.x - 1
+            movey = self.y + 1
+            if checkerBoard[movey][movex] == 2:
+                self.DwnpieceTakeL(movex,movey)
+            elif checkerBoard[movey][movex] == 1:
+                move1 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+        if self.x != 7 and self.y != 7:
+            move2 = True
+            movex = self.x + 1
+            movey = self.y + 1
+            if checkerBoard[movey][movex] == 2:
+                self.DwnpieceTakeR(movex,movey)
+            elif checkerBoard[movey][movex] == 1:
+                move2 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+ 
+    #moves for the king
+    def kingMoveB(self):
+        global availableMovesList
+        global priorityList
+        priorityMove = False
+        if self.x != 0 and self.y != 0:
+            move1 = True
+            movex = self.x - 1
+            movey = self.y - 1
+            if checkerBoard[movey][movex] == 2:
+                self.UppieceTakeL(movex,movey)
+            elif checkerBoard[movey][movex] == 1:
+                move1 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+        if self.x != 7 and self.y != 0:
+            move2 = True
+            movex = self.x + 1
+            movey = self.y - 1
+            if checkerBoard[movey][movex] == 2:
+                self.UppieceTakeR(movex,movey)
+            elif checkerBoard[movey][movex] == 1:
+                move2 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+
+    def kingCheckB(self):
+        if self.isKing == False:
+            if self.y == 7:
+                self.isKing = True
+        if self.isKing == True:
+            self.value = -30
+
+
+    #moves and more for white piece
+    def diagonalForwardW(self):
+        global availableMovesList
+        global priorityList
+        priorityMove = False
+        if self.x != 0 and self.y != 0:
+            move1 = True
+            movex = self.x - 1
+            movey = self.y - 1
+            if checkerBoard[movey][movex] == 1:
+                self.UppieceTakeL(movex,movey)
+            elif checkerBoard[movey][movex] == 2:
+                move1 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+        if self.x != 7 and self.y != 0:
+            move2 = True
+            movex = self.x + 1
+            movey = self.y - 1
+            if checkerBoard[movey][movex] == 1:
+                self.UppieceTakeR(movex,movey)
+            elif checkerBoard[movey][movex] == 2:
+                move2 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+
+    def kingMoveW(self):
+        global availableMovesList
+        global priorityList
+        priorityMove = False
+        if self.x != 0 and self.y != 7:
+            move1 = True
+            movex = self.x - 1
+            movey = self.y + 1
+            if checkerBoard[movey][movex] == 1:
+                self.DwnpieceTakeL(movex,movey)
+            elif checkerBoard[movey][movex] == 2:
+                move1 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+        if self.x != 7 and self.y != 7:
+            move2 = True
+            movex = self.x + 1
+            movey = self.y + 1
+            if checkerBoard[movey][movex] == 1:
+                self.DwnpieceTakeR(movex,movey)
+            elif checkerBoard[movey][movex] == 2:
+                move2 = False
+            else:
+                self.updateList(movex,movey,priorityMove)
+    
+    def kingCheckW(self):
+        if self.isKing == False:
+            if self.y == 0:
+                self.isKing = True
+        if self.isKing == True:
+            self.value = 30
+
+
+
+    
+    
+# procedure to update list with moves
+    def updateList(self,movex,movey,priorityMove):
+        global availableMovesList #used for 
+        global priorityList
+        if priorityMove == True:
+            runningTotal=str(numToAlpha[self.x])
+            runningTotal+=str(self.y+1)
+            runningTotal+=str(numToAlpha[movex])
+            runningTotal+=str(movey+1)
+            priorityList.append(runningTotal)
+            priorityMove = False
+        else:
+            runningTotal=str(numToAlpha[self.x])
+            runningTotal+=str(self.y+1)
+            runningTotal+=str(numToAlpha[movex])
+            runningTotal+=str(movey+1)
+            availableMovesList.append(runningTotal)
+    
+            
+    #black hoping down and right
+    def DwnpieceTakeR(self,movex,movey):
+        enemyposx = movex
+        enemyposy = movey
+        movex = movex+1
+        movey = movey+1
+        if enemyposx != 7 and enemyposy != 7:
+            if checkerBoard[movey][movex] == 0:
+                priorityMove = True
+                self.updateList(movex,movey,priorityMove)
+                runningTotal = str(enemyposx)
+                runningTotal += str(enemyposy)
+                enemypos.append(runningTotal)
+                #eliminate enemy function
+            else:
+                move1 = True
+    #black hoping down and left
+    def DwnpieceTakeL(self,movex,movey):
+        enemyposx = movex
+        enemyposy = movey
+        movex = movex-1
+        movey = movey+1
+        if enemyposx != 0 and enemyposy != 7:
+            if checkerBoard[movey][movex] == 0:
+                priorityMove = True
+                self.updateList(movex,movey,priorityMove)
+                runningTotal = str(enemyposx)
+                runningTotal += str(enemyposy)
+                enemypos.append(runningTotal)
+            else:
+                move1 = True
+    
+    def UppieceTakeR(self,movex,movey):
+        enemyposx = movex
+        enemyposy = movey
+        movex = movex + 1 
+        movey = movey - 1
+        if enemyposx != 7 and enemyposy != 0:
+            if checkerBoard[movey][movex] == 0:
+                priorityMove = True
+                self.updateList(movex,movey,priorityMove)
+                runningTotal = str(enemyposx)
+                runningTotal += str(enemyposy)
+                enemypos.append(runningTotal)
+                #eliminate enemy function
+            else:
+                move1 = True
+    def UppieceTakeL(self,movex,movey):
+        enemyposx = movex
+        enemyposy = movey
+        movex = movex - 1 
+        movey = movey - 1
+        if enemyposx !=0 and enemyposy != 0:
+            if checkerBoard[movey][movex] == 0:
+                priorityMove = True
+                self.updateList(movex,movey,priorityMove)
+                runningTotal = str(enemyposx)
+                runningTotal += str(enemyposy)
+                enemypos.append(runningTotal)
+                #eliminate enemy function
+
+    #for testing to display piece Position 
+    def displaypiecePos(self):
+        print(end= numToAlpha[self.x])
+        print(self.y+1)
+    
+    #editting the piece position in the object info
+    def searchPiece(self,XStart,YStart,XEnd,YEnd):
+        if self.x == XStart and self.y == YStart-1:
+            self.x = XEnd
+            self.y = YEnd-1
+            print(self.x,self.y)
+    
+    #searching piece position  to elim piece
+    def elimSearch(self,enemyposx,enemyposy):
+        if self.x == enemyposx and self.y == enemyposy:
+                allpieces.remove(self)
+                if self.colour == "B":
+                    blackpieces.remove(self)
+                if self.colour == "W":
+                    whitepieces.remove(self)
+        
+ # all piece information
+b1  = pieceInfo(1,0,"B",False,-10)
+b2  = pieceInfo(3,0,"B",False,-10)
+b3  = pieceInfo(5,0,"B",False,-10)
+b4  = pieceInfo(7,0,"B",False,-10)
+b5  = pieceInfo(0,1,"B",False,-10)
+b6  = pieceInfo(2,1,"B",False,-10)
+b7  = pieceInfo(4,1,"B",False,-10)
+b8  = pieceInfo(6,1,"B",False,-10)
+b9  = pieceInfo(1,2,"B",False,-10)
+b10 = pieceInfo(3,2,"B",False,-10)
+b11 = pieceInfo(5,2,"B",False,-10)
+b12 = pieceInfo(7,2,"B",False,-10)
+
+w1  = pieceInfo(0,7,"W",False,10)
+w2  = pieceInfo(2,7,"W",False,10)
+w3  = pieceInfo(4,7,"W",False,10)
+w4  = pieceInfo(6,7,"W",False,10)
+w5  = pieceInfo(1,6,"W",False,10)
+w6  = pieceInfo(3,6,"W",False,10)
+w7  = pieceInfo(5,6,"W",False,10)
+w8  = pieceInfo(7,6,"W",False,10)
+w9  = pieceInfo(0,5,"W",False,10)
+w10 = pieceInfo(2,5,"W",False,10)
+w11 = pieceInfo(4,5,"W",False,10)
+w12 = pieceInfo(6,5,"W",False,10)
+
+blackpieces = [b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12]
+
+whitepieces = [w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,w11,w12]
+
+allpieces = [w1,w2,w3,w4,w5,w6,w7,w8,w9,w10,w11,w12,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12]
+
+#all piece information
+
+
+# checkerboard list 
+checkerBoard = [
+    [0,1,0,1,0,1,0,1],
+    [1,0,1,0,1,0,1,0],
+    [0,1,0,1,0,1,0,1],
+    [0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0],
+    [2,0,2,0,2,0,2,0],
+    [0,2,0,2,0,2,0,2],
+    [2,0,2,0,2,0,2,0]]
+
+#function to eliminate piece
+def elimPiece(enemyposx,enemyposy):
+    print(checkerBoard[enemyposy][enemyposx])
+    checkerBoard[enemyposy][enemyposx] = 0
+    for i in allpieces:
+        i.elimSearch(enemyposx,enemyposy)
+
+#find all active pieceLocations
+def pieceLocations():
+        pieceLocations = []
+        for i in allpieces:
+            entry = str(i.x)
+            entry += str(i.y)
+            pieceLocations.append(entry)
+        return pieceLocations
+
+#score for computer to track
+def score():
+    score = 0
+    for i in allpieces:
+        score += i.value
+    return score
+
+#translation into an easier to read format for position based on machine
+def intomachinepos(coord):
+        curx = int(coord[0])+1
+        cury = int(coord[1])
+        curboardloc = (8*cury) + curx
+        print(curboardloc)
+
+def outofmachinepos(coord):
+    x = coord % 8
+    y = coord / 8
+
+
+
+
+
+
+#available moves programme
+def availableMovesB():
+    global availableMovesList
+    global priorityList
+    global enemypos
+    priorityList = []
+    availableMovesList = []
+    enemypos = []
+    for i in blackpieces:
+        i.kingCheckB()
+        i.diagonalForwardB()
+        if i.isKing == True:
+            i.kingMoveB()
+            
+#available moves programme
+
+def availableMovesW():
+    global availableMovesList
+    global priorityList
+    global enemypos
+    priorityList = []
+    availableMovesList = []
+    enemypos = []
+    for i in whitepieces:
+        i.kingCheckW()
+        i.diagonalForwardW()
+        if i.isKing == True:
+            i.kingMoveW()
+
+
+
+availableMovesList = []
+priorityMove = False
+#converting number to piece
+NumToPiece = {
+    0:" • ", 
+    1:" B ", 2:" W "
+}
+
+AlphaToNum = {
+    "a":0,"b":1,"c":2, "d":3, "e":4,"f":5,"g":6,"h":7,
+    }
+numToAlpha = {
+    0:"a", 1:"b", 2:"c", 3:"d",4:"e",5:"f",6:"g",7:"h",
+}
+
+
+#Process to print the board
+def boardPrint():
+    p = 1
+    print("   A   B   C   D   E   F   G   H  ")
+    for i in range(8):
+        print(p, end='')
+        for j in range(8):
+            print(end=" ")
+            print(end= NumToPiece[checkerBoard[i][j]])
+        print("\n")
+        p = p+1
+
+#find position of all pieces of a certain colour      
+def piecePosB():
+    for i in range(8):
+        for j in range(8):
+            if checkerBoard[i][j] == 1:
+                print("Black piece found at: ",numToAlpha[j],i+1, sep="")
+                                                      
+def piecePosW():
+    for i in range(8):
+        for j in range(8):
+            if checkerBoard[i][j] == 2:
+                print("White piece found at: ",numToAlpha[j],i+1, sep="")
+
+#////////Start of Varying Code for Multi,Single and No player\\\\\\\\#
+
+
+#code for multiple jumps
+def secondaryMoveB(x,y):
+    global priorityList
+    global enemypos
+    availableMovesList= []
+    priorityList = []
+    enemypos = []
+    for i in blackpieces:
+        #taking away one to account for checkerboard number translations
+        if i.x == x and i.y == y-1:
+            i.kingCheckB()
+            i.diagonalForwardB()
+            if i.isKing == True:
+                i.kingMoveB() 
+            while priorityList != []:
+                if playtype == 1 or playtype == 2:
+                    #black player movements
+                    for i in range (len(priorityList)):
+                        j = str(i+1)
+                        print(j,". ",*priorityList[i], sep="",end="  ")
+                    wantedMove = int(input("\nBlack, which move do you wish to do? (Use Integer)"))-1
+                    chosenMove = priorityList[wantedMove]
+                    enemyTaken = enemypos[wantedMove]
+                    XStart = AlphaToNum[chosenMove[0]]
+                    YStart = int(chosenMove[1])
+                    XEnd = AlphaToNum[chosenMove[-2]]
+                    YEnd = int(chosenMove[-1])
+                    enemyx = int(enemyTaken[0])
+                    enemyy = int(enemyTaken[1])
+                    boardEditB(XStart,YStart,XEnd,YEnd)
+                    elimPiece(enemyx,enemyy)
+                    boardPrint()
+                    t.sleep(2)
+                    secondaryMoveB(XEnd,YEnd)
+                if playtype == 3:
+                    #comp move
+                    wantedMove = compInput(priorityList)
+                    chosenMove = priorityList[wantedMove]
+                    enemyTaken = enemypos[wantedMove]
+                    XStart = AlphaToNum[chosenMove[0]]
+                    YStart = int(chosenMove[1])
+                    XEnd = AlphaToNum[chosenMove[-2]]
+                    YEnd = int(chosenMove[-1])
+                    enemyx = int(enemyTaken[0])
+                    enemyy = int(enemyTaken[1])
+                    boardEditB(XStart,YStart,XEnd,YEnd)
+                    elimPiece(enemyx,enemyy)
+                    boardPrint()
+                    t.sleep(2)
+                    secondaryMoveB(XEnd,YEnd)
+
+def secondaryMoveW(x,y):
+    global priorityList
+    global enemypos
+    availableMovesList= []
+    priorityList = []
+    enemypos = []
+    for i in whitepieces:
+        if i.x == x and i.y == (y-1):
+            i.kingCheckW()
+            i.diagonalForwardW()
+            if i.isKing == True:
+                i.kingMoveW() 
+            if len(priorityList) > 0:
+                if playtype == 1 or playtype == 3:
+                    #ai move
+                    wantedMove = compInput(priorityList)
+                    chosenMove = priorityList[wantedMove]
+                    enemyTaken = enemypos[wantedMove]
+                    XStart = AlphaToNum[chosenMove[0]]
+                    YStart = int(chosenMove[1])
+                    XEnd = AlphaToNum[chosenMove[-2]]
+                    YEnd = int(chosenMove[-1])
+                    enemyx = int(enemyTaken[0])
+                    enemyy = int(enemyTaken[1])
+                    boardEditW(XStart,YStart,XEnd,YEnd)
+                    elimPiece(enemyx,enemyy)
+                    boardPrint()
+                    t.sleep(2)
+                    secondaryMoveW(XEnd,YEnd)
+                if playtype == 2:
+                    #white player moves
+                    for i in range (len(priorityList)):
+                        j = str(i+1)
+                        print(j,". ",*priorityList[i], sep="",end="  ")
+                    wantedMove = int(input("\nWhite, which move do you wish to do? (Use Integer)"))-1
+                    chosenMove = priorityList[wantedMove]
+                    enemyTaken = enemypos[wantedMove]
+                    XStart = AlphaToNum[chosenMove[0]]
+                    YStart = int(chosenMove[1])
+                    XEnd = AlphaToNum[chosenMove[-2]]
+                    YEnd = int(chosenMove[-1])
+                    enemyx = int(enemyTaken[0])
+                    enemyy = int(enemyTaken[1])
+                    boardEditW(XStart,YStart,XEnd,YEnd)
+                    elimPiece(enemyx,enemyy)
+                    boardPrint()
+                    t.sleep(2)
+                    secondaryMoveW(XEnd,YEnd)
+        
+
+
+
+# programme for moving a piece
+def movePieceB():
+    global availableMovesList
+    global priorityList
+    moves = 1
+    availableMovesB()
+    if playtype == 1 or playtype == 2:
+        #black is main player and thus can be played in either single or multiplayer
+        if priorityList == []:
+            for i in range (len(availableMovesList)):
+                j = str(i+1)
+                print(j,". ",*availableMovesList[i], sep="",end="  ")
+            wantedMove = int(input("\nBlack, which move do you wish to do? (Use Integer)"))-1
+            if wantedMove > len(availableMovesList) or wantedMove < 0:
+                movePieceB()
+            chosenMove = availableMovesList[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            boardEditB(XStart,YStart,XEnd,YEnd)
+            boardPrint()
+            t.sleep(2)
+            
+
+        else:
+            availableMovesList = priorityList
+            for i in range (len(availableMovesList)):
+                j = str(i+1)
+                print(j,". ",*availableMovesList[i], sep="",end="  ")
+            wantedMove = int(input("\nBlack, which move do you wish to do? (Use Integer)"))-1
+            if wantedMove > len(availableMovesList) or wantedMove < 0:
+                movePieceB()
+            chosenMove = availableMovesList[wantedMove]
+            enemyTaken = enemypos[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            enemyx = int(enemyTaken[0])
+            enemyy = int(enemyTaken[1])
+            boardEditB(XStart,YStart,XEnd,YEnd)
+            elimPiece(enemyx,enemyy)
+            boardPrint()
+            t.sleep(2)
+            secondaryMoveB(XEnd,YEnd)
+    if playtype == 3:
+        #black plays as an ai (no player mode)
+        if priorityList == []:
+            wantedMove = compInput(availableMovesList)
+            chosenMove = availableMovesList[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            boardEditB(XStart,YStart,XEnd,YEnd)
+            boardPrint()
+            t.sleep(2)
+            
+        else:
+            wantedMove = compInput(priorityList)
+            chosenMove = priorityList[wantedMove]
+            enemyTaken = enemypos[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            enemyx = int(enemyTaken[0])
+            enemyy = int(enemyTaken[1])
+            boardEditB(XStart,YStart,XEnd,YEnd)
+            elimPiece(enemyx,enemyy)
+            boardPrint()
+            t.sleep(2)
+            secondaryMoveB(XEnd,YEnd)
+
+        
+
+#print(*availableMovesList, sep=" ") -- print code saved incase of error
+
+#procedures for moving white pieces
+def movePieceW():
+    global availableMovesList
+    global priorityList
+    moves = 1
+    availableMovesW()
+    if playtype == 1 or playtype == 3:
+        #code for single player (white is the ai) or no player (white is the ai)
+        if priorityList == []:
+            wantedMove = compInput(availableMovesList)
+            chosenMove = availableMovesList[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            boardEditW(XStart,YStart,XEnd,YEnd)
+            t.sleep(2)
+            boardPrint()
+            
+        else:
+            wantedMove = compInput(priorityList)
+            chosenMove = priorityList[wantedMove]
+            enemyTaken = enemypos[wantedMove]
+            print("wanted = ",wantedMove)
+            print("enemytaken = ",enemyTaken)
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            enemyx = int(enemyTaken[0])
+            enemyy = int(enemyTaken[1])
+            boardEditW(XStart,YStart,XEnd,YEnd)
+            elimPiece(enemyx,enemyy)
+            t.sleep(2)
+            boardPrint()
+            secondaryMoveW(XEnd,YEnd)
+            
+    if playtype == 2:
+        if priorityList == []:
+            #extensive code for varying game modes
+            for i in range (len(availableMovesList)):
+                j = str(i+1)
+                print(j,". ",*availableMovesList[i], sep="",end="  ")
+            wantedMove = int(input("\nWhite, which move do you wish to do? (Use Integer)"))-1
+            if wantedMove > len(availableMovesList) or wantedMove < 0:
+                movePieceW()
+            chosenMove = availableMovesList[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            boardEditW(XStart,YStart,XEnd,YEnd)
+            boardPrint()
+            
+        else:
+            availableMovesList = priorityList
+            for i in range (len(availableMovesList)):
+                j = str(i+1)
+                print(j,". ",*availableMovesList[i], sep="",end="  ")
+            wantedMove = int(input("\nWhite, which move do you wish to do? (Use Integer)"))-1
+            if wantedMove > len(availableMovesList) or wantedMove < 0:
+                movePieceW()
+            chosenMove = availableMovesList[wantedMove]
+            enemyTaken = enemypos[wantedMove]
+            XStart = AlphaToNum[chosenMove[0]]
+            YStart = int(chosenMove[1])
+            XEnd = AlphaToNum[chosenMove[-2]]
+            YEnd = int(chosenMove[-1])
+            enemyx = int(enemyTaken[0])
+            enemyy = int(enemyTaken[1])
+            boardEditW(XStart,YStart,XEnd,YEnd)
+            elimPiece(enemyx,enemyy)
+            boardPrint()
+            secondaryMoveW(XEnd,YEnd)
+ 
+ #/////////End of Varying Code\\\\\\\\\#     
+   
+
+#boardedit procedures
+def boardEditW(XStart,YStart,XEnd,YEnd):
+    checkerBoard[YStart-1][XStart] = 0
+    checkerBoard[YEnd-1][XEnd] = 2
+    for i in whitepieces:
+        i.searchPiece(XStart,YStart,XEnd,YEnd)
+
+def boardEditB(XStart,YStart,XEnd,YEnd):
+    checkerBoard[YStart-1][XStart] = 0
+    checkerBoard[YEnd-1][XEnd] = 1
+    for i in blackpieces:
+        i.searchPiece(XStart,YStart,XEnd,YEnd)
+
+def initiate():
+    print("Do you wish to: \n1.Play Singleplayer \n2.Play Multiplayer \n3.Watch two AI play")
+    choice = int(input())
+    if choice > 3 or choice < 1:
+        initiate()
+    if choice == 1:
+        playtype = 1
+    elif choice == 2:
+        playtype = 2
+    else:
+        playtype = 3
+    return playtype
+
+def compInput(list):
+    length = len(list)
+    chosenmove = (r.randint(0,length-1))
+    return chosenmove
+    
+
+
+
+
+#piecePosB()
+#piecePosW()
+#availableMovesB()
+#print(availableMovesList, sep=" ")
+def play():
+    global playtype
+    playtype = initiate()
+    boardPrint()
+    while (len(blackpieces) > 0) or (len(whitepieces) > 0):
+        movePieceB()
+        movePieceW()
+    if len(blackpieces) == 0:
+        print("White wins")
+    if len(whitepieces) == 0:
+        print("Black wins")
+
+
+play()
